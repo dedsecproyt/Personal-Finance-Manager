@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Finance Manager</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: #121212; /* Default dark theme */
+      color: #e0e0e0; /* Light text color */
+      transition: background 0.3s, color 0.3s;
+    }
+    header {
+      background: #1E88E5; /* Dark blue */
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .theme-toggle {
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      background: none;
+      border: none;
+      font-size: 15px;
+      color: white;
+      width: 100px;
+    }
+    .theme-toggle::after {
+      content: 'Switch Theme';
+      font-size: 14px;
+      color: white;
+      display: block;
+      margin-top: 5px;
+    }
+    .clock-container {
+      position: absolute;
+      top: 10px;
+      right: 5px; /* Align the container to the right */
+      text-align: right;
+    }
+    .clock {
+      background: #1E1E1E;
+      color: #e0e0e0;
+      padding: 5px 40px;
+      border-radius: 15px;
+      font-size: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      margin-bottom: 5px; /* Space between clock and dev text */
+    }
+    .dev-text {
+      font-size: 14px;
+      color: #ffffff;
+    }
+    .auth-container {
+      width: 100%;
+      max-width: 400px;
+      margin: 30px auto;
+      padding: 10px;
+      background: #1E1E1E;
+      border-radius: 20px;
+      text-align: center;
+    }
+    input, select, button {
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      max-width: 300px;
+      display: block;
+      border: 1px solid #333;
+      border-radius: 15px;
+      box-sizing: border-box;
+      background: #2A2A2A;
+      color: #e0e0e0;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 15px;
+      transition: background 0.3s;
+    }
+    .register-button {
+      background-color: #E53935;
+      color: white;
+      text-decoration: none;
+      display: inline-block;
+      padding: 10px;
+      border-radius: 15px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    .register-button:hover {
+      background-color: #D32F2F;
+    }
+    #registration-container {
+      display: none;
+    }
+    .form-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+    }
+    .sidebar-section {
+      display: flex;
+      flex-direction: row;
+      width: 20% auto;
+    }
+    .sidebar, .transactions {
+      width: 10% auto;
+      padding: 10px;
+      background: #1F1F1F;
+      border-right: 1px solid #333;
+      overflow-y: auto;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    h2 {
+      color: #4CAF50;
+      margin: 10px 0;
+    }
+    form {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #1E1E1E;
+      border: 1px solid #333;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    #categories-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    li {
+      background: #2A2A2A;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #333;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      flex-wrap: wrap; /* Ensure content moves to the next line if necessary */
+    }
+    li span {
+      color: #4CAF50;
+      font-weight: bold;
+      flex: 1 1 auto; /* Span takes up available space */
+    }
+    li button {
+      background: #E53935;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: background 0.5s;
+      flex: 0 0 auto; /* Button keeps its size */
+    }
+    li button:hover {
+      background: #D32F2F;
+    }
+    .chart-container {
+      width: 100%;
+      max-width: 28%;
+      height: 45%;
+      background: #1E1E1E;
+      padding: 0px;
+      border-radius: 50px;
+    }
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+    .light-theme {
+      background: #f4f4f9;
+      color: #333;
+    }
+    .light-theme header {
+      background: #4CAF50;
+    }
+    .light-theme .auth-container, .light-theme form, 
+    .light-theme .sidebar, 
+    .light-theme .transactions, 
+    .light-theme .chart-container, 
+    .light-theme li {
+      background: #ffffff;
+      border-color: #ddd;
+    }
+    .light-theme input, 
+    .light-theme select {
+      background: #ffffff;
+      color: #333;
+      border-color: #ddd;
+    }
+    .light-theme .register-button {
+      background-color: #e53935;
+    }
+    .light-theme .theme-toggle {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Personal Finance Manager</h1>
+    <div class="clock-container">
+      <div id="clock" class="clock">00:00:00</div>
+      <div class="dev-text">DEV: @DEDSEC_PRO</div>
+    </div>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Switch Theme">
+      <i class="fas fa-adjust"></i>
+    </button>
+  </header>
+
+  <!-- Login Form -->
+  <div class="auth-container" id="login-container">
+    <h2>Log In</h2>
+    <form id="login-form">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <div class="form-buttons">
+        <button type="submit" class="login-button">Log In</button>
+        <button type="button" class="register-button" id="show-registration">Register</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Registration Form -->
+  <div class="auth-container" id="registration-container">
+    <h2>Registration</h2>
+    <form id="registration-form">
+      <input type="text" id="register-username" placeholder="Username" required>
+      <input type="password" id="register-password" placeholder="Password" required>
+      <input type="password" id="register-confirm-password" placeholder="Confirm Password" required>
+      <div class="form-buttons">
+        <button type="submit" class="login-button">Register</button>
+        <button type="button" class="register-button" id="show-login">Log In</button>
+      </div>
+    </form>
+  </div>  
+  
+  <div class="container" id="main-container" style="display: none;">
+    <div class="sidebar">
+      <h2>Add Category</h2>
+      <form id="category-form">
+        <input type="text" id="category-name" placeholder="Category Name" required>
+        <button type="submit">Add Category</button>
+      </form>
+      <h2>Categories</h2>
+      <ul id="categories-list">
+        <li>
+          <span>Category 1</span>
+          <button>Delete</button>
+        </li>
+        <li>
+          <span>Category 2</span>
+          <button>Delete</button>
+        </li>
+      </ul>
+    </div>
+    <div class="transactions">
+      <h2>Add Transaction</h2>
+      <form id="transaction-form">
+        <select id="transaction-category" required>
+          <option value="" disabled selected>Select Category</option>
+        </select>
+        <input type="number" id="transaction-amount" placeholder="Amount" required>
+        <select id="transaction-type" required>
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+        <button type="submit">Add Transaction</button>
+      </form>
+      <h2>Transactions</h2>
+      <ul id="transactions-list">
+        <li>Transaction 1</li>
+        <li>Transaction 2</li>
+      </ul>
+    </div>
+    <div class="main">
+      <div class="chart-container">
+        <canvas id="expense-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
